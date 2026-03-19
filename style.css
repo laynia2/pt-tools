@@ -2,17 +2,31 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --border: #dbe1e8;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --active: #111827;
+  --soft: #f8fafc;
+  --success: #065f46;
+  --success-bg: #ecfdf5;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f4f6f8;
-  color: #1f2937;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .site-header {
   padding: 20px 16px 12px;
-  background: #ffffff;
-  border-bottom: 1px solid #dbe1e8;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
 }
 
 .site-header h1 {
@@ -22,7 +36,7 @@ body {
 
 .site-header p {
   margin: 0;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .layout {
@@ -42,18 +56,19 @@ body {
 
 .nav-btn {
   border: 1px solid #d1d5db;
-  background: #ffffff;
+  background: var(--card);
   border-radius: 12px;
   padding: 12px 14px;
   text-align: left;
   font-size: 1rem;
   cursor: pointer;
+  color: var(--text);
 }
 
 .nav-btn.active {
-  background: #1f2937;
+  background: var(--active);
   color: white;
-  border-color: #1f2937;
+  border-color: var(--active);
 }
 
 .content {
@@ -61,8 +76,8 @@ body {
 }
 
 .card {
-  background: #ffffff;
-  border: 1px solid #dbe1e8;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 18px;
 }
@@ -74,7 +89,7 @@ body {
 
 .tool-subtitle {
   margin-top: 0;
-  color: #6b7280;
+  color: var(--muted);
   margin-bottom: 18px;
 }
 
@@ -104,35 +119,40 @@ textarea {
   border: 1px solid #cfd6de;
   border-radius: 10px;
   background: #fff;
+  color: var(--text);
 }
 
-button.action-btn {
+button.action-btn,
+button.secondary-btn {
   margin-top: 8px;
   padding: 12px 14px;
-  border: none;
   border-radius: 10px;
-  background: #2563eb;
-  color: white;
   font-weight: 600;
   cursor: pointer;
 }
 
+button.action-btn {
+  border: none;
+  background: var(--primary);
+  color: white;
+}
+
+button.action-btn:hover {
+  background: var(--primary-dark);
+}
+
 button.secondary-btn {
-  margin-top: 8px;
-  padding: 10px 12px;
   border: 1px solid #cfd6de;
-  border-radius: 10px;
   background: #fff;
-  color: #1f2937;
-  cursor: pointer;
+  color: var(--text);
 }
 
 .result-box {
-  margin-top: 16px;
+  margin-top: 10px;
   padding: 14px;
   border-radius: 12px;
-  background: #f8fafc;
-  border: 1px solid #dbe1e8;
+  background: var(--soft);
+  border: 1px solid var(--border);
   white-space: pre-wrap;
   line-height: 1.45;
 }
@@ -142,9 +162,34 @@ button.secondary-btn {
   font-size: 1rem;
 }
 
+.result-section {
+  margin-top: 18px;
+}
+
+.copy-btn-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
 .small-note {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.92rem;
+}
+
+.copy-status {
+  margin-top: 8px;
+  font-size: 0.92rem;
+  color: var(--success);
+}
+
+.copy-status.hidden {
+  display: none;
+}
+
+.spacer-top {
+  margin-top: 18px;
 }
 
 @media (max-width: 800px) {
