@@ -2,6 +2,9 @@ import { renderBMI } from "./calculators/bmi.js";
 import { renderGait } from "./calculators/gait.js";
 import { renderCardio } from "./calculators/cardio.js";
 import { renderUtilities } from "./calculators/utilities.js";
+import { renderStrength } from "./calculators/strength.js";
+import { renderBalance } from "./calculators/balance.js";
+import { renderOutcomes } from "./calculators/outcomes.js";
 
 const app = document.getElementById("app");
 const navButtons = document.querySelectorAll(".nav-btn");
@@ -11,6 +14,9 @@ const tools = {
   gait: renderGait,
   cardio: renderCardio,
   utilities: renderUtilities,
+  strength: renderStrength,
+  balance: renderBalance,
+  outcomes: renderOutcomes,
 };
 
 function setActiveButton(toolName) {
