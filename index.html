@@ -1,1 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PT Tools</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>PT Tools</h1>
+    <p>Quick clinical calculators</p>
+  </header>
 
+  <main class="layout">
+    <aside class="sidebar">
+      <button class="nav-btn active" data-tool="bmi">BMI</button>
+      <button class="nav-btn" data-tool="gait">Gait Speed</button>
+      <button class="nav-btn" data-tool="cardio">Heart Rate Zones</button>
+      <button class="nav-btn" data-tool="utilities">Utilities</button>
+    </aside>
+
+    <section class="content">
+      <div id="app" class="card"></div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
