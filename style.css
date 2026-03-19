@@ -1,1 +1,163 @@
+* {
+  box-sizing: border-box;
+}
 
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f4f6f8;
+  color: #1f2937;
+}
+
+.site-header {
+  padding: 20px 16px 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #dbe1e8;
+}
+
+.site-header h1 {
+  margin: 0 0 4px;
+  font-size: 1.8rem;
+}
+
+.site-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  padding: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav-btn {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.nav-btn.active {
+  background: #1f2937;
+  color: white;
+  border-color: #1f2937;
+}
+
+.content {
+  min-width: 0;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #dbe1e8;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.tool-title {
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.tool-subtitle {
+  margin-top: 0;
+  color: #6b7280;
+  margin-bottom: 18px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+input,
+select,
+button,
+textarea {
+  width: 100%;
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  margin-top: 6px;
+  padding: 12px;
+  border: 1px solid #cfd6de;
+  border-radius: 10px;
+  background: #fff;
+}
+
+button.action-btn {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.secondary-btn {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #cfd6de;
+  border-radius: 10px;
+  background: #fff;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.result-box {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #dbe1e8;
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+.section-title {
+  margin: 18px 0 8px;
+  font-size: 1rem;
+}
+
+.small-note {
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    flex: 1 1 140px;
+  }
+}
