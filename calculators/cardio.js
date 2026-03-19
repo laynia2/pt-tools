@@ -1,3 +1,5 @@
+import { renderResultSections, wireCopyButtons } from "../helpers.js";
+
 export function renderCardio(container) {
   container.innerHTML = `
     <h2 class="tool-title">Heart Rate Zones</h2>
@@ -15,13 +17,12 @@ export function renderCardio(container) {
       </div>
 
       <button id="hr-calc" class="action-btn">Calculate HR Zones</button>
-      <button id="hr-copy" class="secondary-btn">Copy Result</button>
     </div>
 
-    <div id="hr-result" class="result-box">Enter values and calculate.</div>
+    <div id="hr-output" class="spacer-top"></div>
   `;
 
-  const resultBox = document.getElementById("hr-result");
+  const output = document.getElementById("hr-output");
 
   const formulas = {
     "Fox (220-age)": (age) => 220 - age,
@@ -37,55 +38,7 @@ export function renderCardio(container) {
 
   function zoneRangeHrr(hrMax, resting, low, high) {
     const reserve = hrMax - resting;
-    const zLow = Math.round(resting + reserve * low);
-    const zHigh = Math.round(resting + reserve * high);
-    return `${zLow}-${zHigh}`;
-  }
-
-  function buildOutput(age, restingHR) {
-    const lines = [];
-    lines.push("Heart Rate Zones");
-    lines.push(`Age: ${age}`);
-    lines.push(`Resting HR: ${restingHR ? restingHR : "not entered"}`);
-    lines.push("");
-
-    lines.push("% Max HR Method");
-    lines.push("-----------------------");
-
-    for (const [name, fn] of Object.entries(formulas)) {
-      const hrMax = fn(age);
-      lines.push(name);
-      lines.push(`HR Max: ${Math.round(hrMax)} bpm`);
-      lines.push(`Z1 50-60%: ${zoneRangePercent(hrMax, 0.5, 0.6)}`);
-      lines.push(`Z2 60-70%: ${zoneRangePercent(hrMax, 0.6, 0.7)}`);
-      lines.push(`Z3 70-80%: ${zoneRangePercent(hrMax, 0.7, 0.8)}`);
-      lines.push(`Z4 80-90%: ${zoneRangePercent(hrMax, 0.8, 0.9)}`);
-      lines.push(`Z5 90-100%: ${zoneRangePercent(hrMax, 0.9, 1.0)}`);
-      lines.push(`85% cutoff: ${Math.round(hrMax * 0.85)}`);
-      lines.push("");
-    }
-
-    if (restingHR) {
-      lines.push("Karvonen / HRR Method");
-      lines.push("-----------------------");
-
-      for (const [name, fn] of Object.entries(formulas)) {
-        const hrMax = fn(age);
-        lines.push(name);
-        lines.push(`HR Max: ${Math.round(hrMax)} bpm`);
-        lines.push(`Resting HR: ${Math.round(restingHR)} bpm`);
-        lines.push(`Z1 50-60%: ${zoneRangeHrr(hrMax, restingHR, 0.5, 0.6)}`);
-        lines.push(`Z2 60-70%: ${zoneRangeHrr(hrMax, restingHR, 0.6, 0.7)}`);
-        lines.push(`Z3 70-80%: ${zoneRangeHrr(hrMax, restingHR, 0.7, 0.8)}`);
-        lines.push(`Z4 80-90%: ${zoneRangeHrr(hrMax, restingHR, 0.8, 0.9)}`);
-        lines.push(`Z5 90-100%: ${zoneRangeHrr(hrMax, restingHR, 0.9, 1.0)}`);
-        const reserve85 = Math.round(restingHR + (hrMax - restingHR) * 0.85);
-        lines.push(`85% cutoff: ${reserve85}`);
-        lines.push("");
-      }
-    }
-
-    return lines.join("\n").trim();
+    return `${Math.round(resting + reserve * low)}-${Math.round(resting + reserve * high)}`;
   }
 
   document.getElementById("hr-calc").addEventListener("click", () => {
@@ -94,23 +47,40 @@ export function renderCardio(container) {
     const restingHR = restingValue === "" ? null : parseFloat(restingValue);
 
     if (!age || age <= 0) {
-      resultBox.textContent = "Enter a valid age.";
+      output.innerHTML = `<div class="result-box">Enter a valid age.</div>`;
       return;
     }
 
     if (restingHR !== null && (!restingHR || restingHR <= 0)) {
-      resultBox.textContent = "Enter a valid resting HR or leave it blank.";
+      output.innerHTML = `<div class="result-box">Enter a valid resting HR or leave it blank.</div>`;
       return;
     }
 
-    resultBox.textContent = buildOutput(age, restingHR);
-  });
+    const summaryLines = [];
+    const rawLines = [`Age: ${age}`, `Resting HR: ${restingHR ?? "not entered"}`];
 
-  document.getElementById("hr-copy").addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(resultBox.textContent);
-    } catch {
-      // do nothing
+    for (const [name, fn] of Object.entries(formulas)) {
+      const hrMax = fn(age);
+      summaryLines.push(`${name}: HR max ${Math.round(hrMax)}, 85% cutoff ${Math.round(hrMax * 0.85)}`);
+      rawLines.push(
+        `${name} | Z1 ${zoneRangePercent(hrMax, 0.5, 0.6)} | Z2 ${zoneRangePercent(hrMax, 0.6, 0.7)} | Z3 ${zoneRangePercent(hrMax, 0.7, 0.8)} | Z4 ${zoneRangePercent(hrMax, 0.8, 0.9)} | Z5 ${zoneRangePercent(hrMax, 0.9, 1.0)}`
+      );
+
+      if (restingHR !== null) {
+        rawLines.push(
+          `${name} HRR | Z1 ${zoneRangeHrr(hrMax, restingHR, 0.5, 0.6)} | Z2 ${zoneRangeHrr(hrMax, restingHR, 0.6, 0.7)} | Z3 ${zoneRangeHrr(hrMax, restingHR, 0.7, 0.8)} | Z4 ${zoneRangeHrr(hrMax, restingHR, 0.8, 0.9)} | Z5 ${zoneRangeHrr(hrMax, restingHR, 0.9, 1.0)} | 85% ${Math.round(restingHR + (hrMax - restingHR) * 0.85)}`
+        );
+      }
     }
+
+    const result = {
+      summary: summaryLines.join("\n"),
+      explanation: `Shows multiple predicted HR max equations with standard training zones. ${restingHR !== null ? "Karvonen / HRR zones are also included." : "Enter resting HR to also display Karvonen / HRR zones."}`,
+      note: `Heart rate zones calculated using multiple age-predicted HR max equations${restingHR !== null ? " and Karvonen / HRR method" : ""}.`,
+      raw: rawLines.join("\n")
+    };
+
+    output.innerHTML = renderResultSections(result);
+    wireCopyButtons(output, result);
   });
 }
