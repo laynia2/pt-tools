@@ -5,55 +5,58 @@ const CPT_OPTIONS = [
     code: "97110",
     shortName: "Ther-Ex",
     fullName: "Therapeutic Exercise",
-    description: "Therapeutic exercises to develop strength, endurance, range of motion, and flexibility."
+    description: "One-on-one therapeutic exercises used to improve strength, endurance, range of motion, or flexibility. Common examples include resisted exercise, stretching, and other structured exercise interventions directed by the clinician."
   },
   {
     code: "97112",
     shortName: "Neuro Re-Ed",
     fullName: "Neuromuscular Re-Education",
-    description: "Movement, balance, coordination, kinesthetic sense, posture, and proprioception training."
+    description: "One-on-one interventions intended to improve balance, coordination, kinesthetic sense, posture, proprioception, motor control, and movement quality. Common examples include postural training, balance work, movement retraining, and proprioceptive exercises."
   },
   {
     code: "97113",
     shortName: "Aquatic Therapy",
     fullName: "Aquatic Therapy / Aquatic Therapeutic Exercise",
-    description: "Therapeutic procedures performed in water to improve function, mobility, strength, or tolerance."
+    description: "Skilled therapeutic procedures performed in water to improve function, mobility, strength, endurance, pain, or movement tolerance. This involves direct treatment by the clinician rather than independent pool exercise."
   },
   {
     code: "97116",
     shortName: "Gait Training",
     fullName: "Gait Training Therapy",
-    description: "Training in walking and related functional ambulation tasks."
+    description: "One-on-one training focused on walking and related ambulation tasks. This can include training with or without assistive devices, cueing for gait pattern improvement, stair training related to gait, and progression of safe functional ambulation."
   },
   {
     code: "97140",
     shortName: "Manual Therapy",
     fullName: "Manual Therapy Techniques",
-    description: "Manual therapy including mobilization, manipulation, manual lymphatic drainage, or traction."
+    description: "Hands-on skilled techniques such as soft tissue mobilization, joint mobilization, manipulation, manual lymphatic techniques, and manual traction, when performed as part of treatment to improve pain, mobility, tissue extensibility, or function."
   },
   {
     code: "97535",
     shortName: "Self Management",
     fullName: "Self-Care / Home Management Training",
-    description: "Training in self-care, home management, activities of daily living, and compensatory strategies."
+    description: "Training in self-care and home-management activities, including activities of daily living, compensatory strategies, safety procedures, use of adaptive equipment, and instruction intended to improve independence in daily tasks."
   },
   {
     code: "97530",
     shortName: "Therapeutic Activity",
     fullName: "Therapeutic Activities",
-    description: "Dynamic activities to improve functional performance."
+    description: "One-on-one use of dynamic, functional activities to improve performance in real or simulated tasks. Common examples include lifting, reaching, carrying, transfers, squatting, and other task-based movements tied to functional goals."
   },
   {
     code: "97035",
     shortName: "Ultrasound",
     fullName: "Ultrasound Therapy",
-    description: "Application of ultrasound modality."
+    description: "Application of therapeutic ultrasound as a modality by the clinician, typically for thermal or mechanical effects intended to support pain reduction, tissue extensibility, or healing as part of the treatment plan."
   }
 ];
 
 export function renderBilling(container) {
   container.innerHTML = `
     <h2 class="tool-title">Billing / Timed Units</h2>
+    <div class="result-box" style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;font-weight:700;">
+    Warning: This calculator is currently broken. Do not use it for billing or documentation.
+  </div>
     <p class="tool-subtitle">CMS 8-minute rule or simple 15-minute-per-unit method for timed CPT codes.</p>
 
     <div class="form-grid">
@@ -96,6 +99,8 @@ export function renderBilling(container) {
       <h3 class="section-title">CPT Code Reference</h3>
       <p class="small-note">Tap a button to copy the code title and description.</p>
       <div id="billing-reference" class="copy-btn-row"></div>
+      <div id="billing-definition" class="result-box" style="display:none;"></div>
+</div>
     </div>
 
     <div id="billing-output" class="spacer-top"></div>
@@ -245,6 +250,8 @@ export function renderBilling(container) {
 }
 
 function renderReferenceButtons(container) {
+  const definitionBox = document.getElementById("billing-definition");
+
   container.innerHTML = CPT_OPTIONS.map(
     (item) => `
       <button class="secondary-btn billing-ref-btn" data-code="${item.code}">
@@ -258,7 +265,12 @@ function renderReferenceButtons(container) {
       const item = CPT_OPTIONS.find((entry) => entry.code === btn.dataset.code);
       if (!item) return;
 
-      const text = `${item.code} ${item.fullName}\n${item.description}`;
+      const text = `${item.code} ${item.fullName}\n\n${item.description}`;
+
+      if (definitionBox) {
+        definitionBox.style.display = "block";
+        definitionBox.textContent = text;
+      }
 
       try {
         await navigator.clipboard.writeText(text);
