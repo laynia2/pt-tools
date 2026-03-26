@@ -5,6 +5,7 @@ import { renderUtilities } from "./calculators/utilities.js";
 import { renderStrength } from "./calculators/strength.js";
 import { renderBalance } from "./calculators/balance.js";
 import { renderOutcomes } from "./calculators/outcomes.js";
+import { renderBilling } from "./calculators/billing.js";
 
 const app = document.getElementById("app");
 const navButtons = document.querySelectorAll(".nav-btn");
@@ -17,6 +18,7 @@ const tools = {
   strength: renderStrength,
   balance: renderBalance,
   outcomes: renderOutcomes,
+  billing: renderBilling,
 };
 
 function setActiveButton(toolName) {
