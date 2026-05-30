@@ -5,13 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PT Tools</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="./manifest.json" />
+
+  <!-- iOS / Safari PWA meta tags (Safari doesn't fully read manifest.json) -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="PT Tools" />
+  <meta name="theme-color" content="#2563eb" />
+
+  <!-- iOS home screen icons — add these PNGs to an /icons/ folder in your repo -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152.png" />
 </head>
 <body>
+
+  <!-- Update banner — hidden until SW signals a new version is available -->
+  <div id="update-banner" class="update-banner" hidden>
+    <span>A new version of PT Tools is available.</span>
+    <button class="update-banner-btn">Update now</button>
+  </div>
   <header class="site-header">
     <h1>PT Tools</h1>
     <p>Quick clinical calculators and note helpers</p>
 
-<div class="version-pill">v0.2.0</div>
+<div class="version-pill">v0.5.0</div>
   </div>
     
 <nav class="top-nav">
@@ -39,5 +58,71 @@
   </main>
 
   <script type="module" src="app.js"></script>
+
+  <!-- Service worker registration + update banner -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").then((reg) => {
+
+        // If there's already a waiting worker on page load, show the banner
+        // immediately (e.g. user opened a tab while an update was pending).
+        if (reg.waiting) {
+          showUpdateBanner(reg.waiting);
+        }
+
+        // A new SW just installed and is waiting for the old one to release.
+        reg.addEventListener("updatefound", () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              showUpdateBanner(newWorker);
+            }
+          });
+        });
+      });
+
+      // The SW posts SW_UPDATE_AVAILABLE when it detects changed file content
+      // on a background fetch (stale-while-revalidate).
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data?.type === "SW_UPDATE_AVAILABLE") {
+          navigator.serviceWorker.getRegistration().then((reg) => {
+            if (reg?.waiting) {
+              showUpdateBanner(reg.waiting);
+            } else {
+              // No waiting worker yet — just reload to pick up cached updates.
+              showReloadBanner();
+            }
+          });
+        }
+      });
+
+      // After the new SW takes control, reload to get the fresh files.
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+    }
+
+    function showUpdateBanner(waitingWorker) {
+      const banner = document.getElementById("update-banner");
+      if (!banner) return;
+      banner.hidden = false;
+      banner.querySelector("button").addEventListener("click", () => {
+        waitingWorker.postMessage({ type: "SKIP_WAITING" });
+      });
+    }
+
+    function showReloadBanner() {
+      const banner = document.getElementById("update-banner");
+      if (!banner) return;
+      banner.hidden = false;
+      banner.querySelector("button").addEventListener("click", () => {
+        window.location.reload();
+      });
+    }
+  </script>
 </body>
 </html>

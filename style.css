@@ -287,6 +287,12 @@ button.secondary-btn {
   margin-top: 18px;
 }
 
+.goal-timeframe-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 @media (max-width: 800px) {
   .layout {
     grid-template-columns: 1fr;
@@ -299,5 +305,48 @@ button.secondary-btn {
 
   .nav-btn {
     flex: 1 1 140px;
+  }
+}
+
+/* Update banner */
+.update-banner {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.update-banner[hidden] {
+  display: none;
+}
+
+.update-banner-btn {
+  width: auto;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 2px solid #fff;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.update-banner-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 480px) {
+  .goal-timeframe-row {
+    grid-template-columns: 1fr;
   }
 }
