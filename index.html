@@ -18,6 +18,8 @@
   <!-- iOS home screen icons — add these PNGs to an /icons/ folder in your repo -->
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png" />
   <link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152.png" />
+
+<link rel="stylesheet" href="bctt.css">
 </head>
 <body>
 
@@ -124,5 +126,360 @@
       });
     }
   </script>
+  <script src="bctt.js"></script>
+  <!--
+BCTT TOOL
+Drop this block inside the <body> of your existing PT Tools HTML page.
+Then add <link rel="stylesheet" href="bctt.css"> in <head>
+and <script src="bctt.js"></script> before </body>.
+-->
+<section class="bctt-tool" id="bctt-tool">
+  <header class="bctt-header">
+    <div>
+      <p class="bctt-kicker">Concussion / Exertion Testing</p>
+      <h1>Buffalo Concussion Treadmill Test</h1>
+      <p class="bctt-subtitle">Run the BCTT, record each stage, calculate the exercise threshold, generate documentation, and export the results.</p>
+    </div>
+    <button type="button" class="bctt-btn bctt-btn-secondary" id="bctt-new-test">New Test</button>
+  </header>
+
+  <div class="bctt-notice">
+    Clinical decision-support tool. Follow the official BCTT protocol and use clinical judgment for all stopping criteria and interpretation.
+  </div>
+
+  <nav class="bctt-step-nav" aria-label="BCTT workflow">
+    <button class="bctt-step is-active" data-go="setup" type="button">1. Setup</button>
+    <button class="bctt-step" data-go="test" type="button">2. Test</button>
+    <button class="bctt-step" data-go="results" type="button">3. Results</button>
+  </nav>
+
+  <!-- SETUP -->
+  <div class="bctt-panel is-active" data-panel="setup">
+    <div class="bctt-grid bctt-grid-2">
+      <div class="bctt-card">
+        <h2>Test Setup</h2>
+
+        <div class="bctt-form-grid">
+          <label>
+            Patient / chart ID <span class="bctt-muted">(optional)</span>
+            <input id="bctt-patient-id" type="text" autocomplete="off" placeholder="Avoid PHI if not needed">
+          </label>
+
+          <label>
+            Test date
+            <input id="bctt-date" type="date">
+          </label>
+
+          <label>
+            Age
+            <input id="bctt-age" type="number" min="8" max="100" inputmode="numeric" placeholder="e.g. 22">
+          </label>
+
+          <label>
+            Height
+            <select id="bctt-height-group">
+              <option value="short">Under 5'10"</option>
+              <option value="tall">5'10" or taller</option>
+            </select>
+          </label>
+
+          <label>
+            Starting speed (mph)
+            <input id="bctt-start-speed" type="number" min="1" max="8" step="0.1" value="3.2" inputmode="decimal">
+          </label>
+
+          <label>
+            Seated resting HR
+            <input id="bctt-rest-hr" type="number" min="30" max="240" inputmode="numeric" placeholder="bpm">
+          </label>
+
+          <label>
+            Baseline symptom severity
+            <input id="bctt-baseline-symptoms" type="number" min="0" max="10" step="1" value="0" inputmode="numeric">
+          </label>
+
+          <label>
+            Baseline RPE (6–20)
+            <input id="bctt-baseline-rpe" type="number" min="6" max="20" step="1" value="6" inputmode="numeric">
+          </label>
+        </div>
+
+        <fieldset class="bctt-fieldset">
+          <legend>Baseline symptoms</legend>
+          <div class="bctt-check-grid" id="bctt-baseline-symptom-list">
+            <label><input type="checkbox" value="Headache"> Headache</label>
+            <label><input type="checkbox" value="Dizziness"> Dizziness</label>
+            <label><input type="checkbox" value="Nausea"> Nausea</label>
+            <label><input type="checkbox" value="Fogginess"> Fogginess</label>
+            <label><input type="checkbox" value="Head pressure"> Head pressure</label>
+            <label><input type="checkbox" value="Visual symptoms"> Visual symptoms</label>
+            <label><input type="checkbox" value="Light sensitivity"> Light sensitivity</label>
+            <label><input type="checkbox" value="Balance symptoms"> Balance symptoms</label>
+            <label><input type="checkbox" value="Neck symptoms"> Neck symptoms</label>
+          </div>
+        </fieldset>
+
+        <label>
+          Other baseline symptoms / notes
+          <textarea id="bctt-baseline-notes" rows="2" placeholder="Optional"></textarea>
+        </label>
+
+        <label class="bctt-inline-check">
+          <input id="bctt-modified-protocol" type="checkbox">
+          Modified protocol / starting speed adjusted for patient
+        </label>
+
+        <div class="bctt-actions">
+          <button type="button" class="bctt-btn bctt-btn-primary" id="bctt-start-test">Start BCTT</button>
+        </div>
+      </div>
+
+      <div class="bctt-card">
+        <h2>Protocol Directions</h2>
+        <ol class="bctt-directions">
+          <li>After 2 minutes seated, record resting HR, symptom severity, and RPE.</li>
+          <li>Place the patient on the treadmill and obtain the Stage 0 standing HR before exercise.</li>
+          <li>Begin at the selected brisk walking speed and 0% incline.</li>
+          <li>At each 1-minute stage, record HR, RPE, symptoms, and observations.</li>
+          <li>Increase incline by 1% each minute through 15%.</li>
+          <li>After 15% incline, keep incline at 15% and increase speed by 0.4 mph each minute.</li>
+          <li>Terminate for ≥3-point symptom exacerbation from baseline, voluntary exhaustion (RPE &gt;17), patient request, or examiner/safety concern.</li>
+          <li>If tolerated, cool down at 2.0 mph / 0% for 2 minutes and record recovery values.</li>
+        </ol>
+
+        <div class="bctt-reference-box">
+          <strong>Automatic reference values</strong>
+          <div class="bctt-stat-row"><span>Age-predicted HRmax</span><strong id="bctt-aphrmax">—</strong></div>
+          <div class="bctt-stat-row"><span>80% HRmax</span><strong id="bctt-hr80">—</strong></div>
+          <div class="bctt-stat-row"><span>90% HRmax</span><strong id="bctt-hr90">—</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE TEST -->
+  <div class="bctt-panel" data-panel="test">
+    <div class="bctt-live-top">
+      <div class="bctt-stage-display">
+        <span class="bctt-label">Current stage</span>
+        <strong id="bctt-stage-number">Stage 0</strong>
+      </div>
+      <div class="bctt-stage-display">
+        <span class="bctt-label">Treadmill</span>
+        <strong><span id="bctt-current-speed">3.2</span> mph · <span id="bctt-current-grade">0</span>%</strong>
+      </div>
+      <div class="bctt-stage-display">
+        <span class="bctt-label">Stage timer</span>
+        <strong id="bctt-timer">01:00</strong>
+      </div>
+    </div>
+
+    <div class="bctt-grid bctt-grid-live">
+      <div class="bctt-card">
+        <h2>Record Stage</h2>
+
+        <div class="bctt-live-inputs">
+          <label>
+            Heart rate
+            <div class="bctt-input-unit">
+              <input id="bctt-live-hr" type="number" min="30" max="240" inputmode="numeric" placeholder="—">
+              <span>bpm</span>
+            </div>
+          </label>
+
+          <label>
+            RPE
+            <div class="bctt-input-unit">
+              <input id="bctt-live-rpe" type="number" min="6" max="20" inputmode="numeric" placeholder="6–20">
+              <span>/20</span>
+            </div>
+          </label>
+
+          <label>
+            Symptoms
+            <div class="bctt-input-unit">
+              <input id="bctt-live-symptoms" type="number" min="0" max="10" inputmode="numeric" placeholder="0–10">
+              <span>/10</span>
+            </div>
+          </label>
+        </div>
+
+        <div id="bctt-delta-alert" class="bctt-delta-alert" aria-live="polite">Symptom change: —</div>
+
+        <fieldset class="bctt-fieldset">
+          <legend>Current symptoms</legend>
+          <div class="bctt-check-grid" id="bctt-current-symptom-list">
+            <label><input type="checkbox" value="Headache"> Headache</label>
+            <label><input type="checkbox" value="Dizziness"> Dizziness</label>
+            <label><input type="checkbox" value="Nausea"> Nausea</label>
+            <label><input type="checkbox" value="Fogginess"> Fogginess</label>
+            <label><input type="checkbox" value="Head pressure"> Head pressure</label>
+            <label><input type="checkbox" value="Visual symptoms"> Visual symptoms</label>
+            <label><input type="checkbox" value="Light sensitivity"> Light sensitivity</label>
+            <label><input type="checkbox" value="Balance symptoms"> Balance symptoms</label>
+            <label><input type="checkbox" value="Neck symptoms"> Neck symptoms</label>
+          </div>
+        </fieldset>
+
+        <label>
+          Stage observations
+          <input id="bctt-live-notes" type="text" autocomplete="off" placeholder="Optional">
+        </label>
+
+        <div class="bctt-actions bctt-actions-stack-mobile">
+          <button type="button" class="bctt-btn bctt-btn-primary bctt-btn-large" id="bctt-save-advance">Save Stage &amp; Advance</button>
+          <button type="button" class="bctt-btn bctt-btn-danger" id="bctt-end-test">End Test</button>
+        </div>
+      </div>
+
+      <div class="bctt-card bctt-table-card">
+        <div class="bctt-card-heading-row">
+          <h2>Recorded Stages</h2>
+          <button type="button" class="bctt-link-btn" id="bctt-delete-last">Delete last</button>
+        </div>
+        <div class="bctt-table-wrap">
+          <table class="bctt-table">
+            <thead>
+              <tr>
+                <th>Stage</th>
+                <th>Speed</th>
+                <th>Grade</th>
+                <th>HR</th>
+                <th>RPE</th>
+                <th>Symptoms</th>
+                <th>Δ</th>
+              </tr>
+            </thead>
+            <tbody id="bctt-stage-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="bctt-panel" data-panel="results">
+    <div class="bctt-grid bctt-grid-2">
+      <div class="bctt-card">
+        <h2>BCTT Result</h2>
+        <div class="bctt-result-grid">
+          <div><span>Stop reason</span><strong id="bctt-result-stop">—</strong></div>
+          <div><span>Final workload</span><strong id="bctt-result-workload">—</strong></div>
+          <div><span>Heart rate at termination</span><strong id="bctt-result-hr">—</strong></div>
+          <div><span>RPE</span><strong id="bctt-result-rpe">—</strong></div>
+          <div><span>Symptoms</span><strong id="bctt-result-symptoms">—</strong></div>
+          <div><span>Symptom change</span><strong id="bctt-result-delta">—</strong></div>
+          <div><span>90% of termination HR</span><strong id="bctt-result-90hrt">—</strong></div>
+          <div><span>Test duration</span><strong id="bctt-result-duration">—</strong></div>
+        </div>
+
+        <h3>Heart Rate / Symptoms by Stage</h3>
+        <div class="bctt-chart-wrap">
+          <canvas id="bctt-chart" width="700" height="300" aria-label="Heart rate and symptom response chart"></canvas>
+        </div>
+      </div>
+
+      <div class="bctt-card">
+        <div class="bctt-card-heading-row">
+          <h2>Documentation</h2>
+          <button type="button" class="bctt-btn bctt-btn-secondary bctt-btn-small" id="bctt-regenerate-docs">Regenerate</button>
+        </div>
+
+        <label>
+          Assessment
+          <textarea id="bctt-assessment" rows="7"></textarea>
+        </label>
+
+        <label>
+          Activity / intervention
+          <textarea id="bctt-activity" rows="5"></textarea>
+        </label>
+
+        <div class="bctt-form-grid">
+          <label>
+            Training target
+            <select id="bctt-training-percent">
+              <option value="0.80">80% of threshold HR</option>
+              <option value="0.85">85% of threshold HR</option>
+              <option value="0.90" selected>90% of threshold HR</option>
+            </select>
+          </label>
+          <div class="bctt-reference-box bctt-target-box">
+            <span>Calculated target</span>
+            <strong id="bctt-training-target">—</strong>
+          </div>
+        </div>
+
+        <label>
+          Short-term goal
+          <textarea id="bctt-stg" rows="3"></textarea>
+        </label>
+
+        <label>
+          Long-term goal
+          <textarea id="bctt-ltg" rows="3"></textarea>
+        </label>
+
+        <div class="bctt-actions bctt-wrap-actions">
+          <button type="button" class="bctt-btn bctt-btn-primary" id="bctt-copy-note">Copy Note</button>
+          <button type="button" class="bctt-btn bctt-btn-secondary" id="bctt-print-pdf">Print / Save PDF</button>
+          <button type="button" class="bctt-btn bctt-btn-secondary" id="bctt-export-csv">Excel / CSV</button>
+          <button type="button" class="bctt-btn bctt-btn-secondary" id="bctt-export-json">JSON</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bctt-card">
+      <h2>Full Stage Data</h2>
+      <div class="bctt-table-wrap">
+        <table class="bctt-table">
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Speed</th>
+              <th>Grade</th>
+              <th>HR</th>
+              <th>RPE</th>
+              <th>Symptoms</th>
+              <th>Δ</th>
+              <th>Symptoms reported</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="bctt-results-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- STOP MODAL -->
+  <dialog id="bctt-stop-dialog" class="bctt-dialog">
+    <form method="dialog">
+      <h2>End BCTT</h2>
+      <p>Select the primary reason the test was terminated.</p>
+
+      <label class="bctt-radio"><input type="radio" name="bctt-stop-reason" value="Symptom exacerbation" checked> Symptom exacerbation (≥3 points)</label>
+      <label class="bctt-radio"><input type="radio" name="bctt-stop-reason" value="Voluntary exhaustion"> Voluntary exhaustion / RPE &gt;17</label>
+      <label class="bctt-radio"><input type="radio" name="bctt-stop-reason" value="Reached high exercise tolerance without symptom exacerbation"> High exercise tolerance without symptom exacerbation</label>
+      <label class="bctt-radio"><input type="radio" name="bctt-stop-reason" value="Patient requested stop"> Patient requested stop</label>
+      <label class="bctt-radio"><input type="radio" name="bctt-stop-reason" value="Examiner / safety concern"> Examiner / safety concern</label>
+      <label class="bctt-radio"><input type="radio" name="bctt-stop-reason" value="Musculoskeletal limitation"> Musculoskeletal limitation</label>
+      <label class="bctt-radio"><input type="radio" name="bctt-stop-reason" value="Other"> Other</label>
+
+      <label>
+        Additional stop notes
+        <textarea id="bctt-stop-notes" rows="2"></textarea>
+      </label>
+
+      <div class="bctt-dialog-actions">
+        <button value="cancel" class="bctt-btn bctt-btn-secondary">Cancel</button>
+        <button type="button" class="bctt-btn bctt-btn-danger" id="bctt-confirm-end">End &amp; Calculate Results</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="bctt-toast" class="bctt-toast" role="status" aria-live="polite"></div>
+</section>
+
 </body>
 </html>
